@@ -3,6 +3,7 @@ package com.example.tictactoe.ui.theme
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlin.random.Random
 
 class GameViewModel: ViewModel() {
 
@@ -47,7 +48,6 @@ class GameViewModel: ViewModel() {
      * TODO: remove the needless new matrix and change the boxes matrix directly
      */
     fun selectBoxPlayer(box: BoxModel) {
-        var currantPlayer: Status = gameStatus.value?.currentPlayer!!
         var hasModification: Boolean = false
 
         var list: MutableList<MutableList<BoxModel>> = boxes.value?.map { columns ->
@@ -55,7 +55,7 @@ class GameViewModel: ViewModel() {
                 if (box.indexColumn == row.indexColumn && box.indexRow == row.indexRow) {
                     if (row.status == Status.Empty) {
                         hasModification = true
-                        row.status = currantPlayer
+                        row.status = Status.PlayerX
                     }
                 }
 
@@ -74,8 +74,27 @@ class GameViewModel: ViewModel() {
         checkGameEnded()
     }
 
-    fun selectBoxAI(){
-        //TODO
+    fun pickRandomly(boxes: MutableList<MutableList<BoxModel>>): BoxModel {
+        val availableChoices = boxes
+                                .flatten()
+                                .filter {
+                                    it.status == Status.Empty
+                                }
+        println("Available choices are: $availableChoices")
+        val pickedIndex = Random.nextInt(0, availableChoices.size)
+        return availableChoices[pickedIndex]
+    }
+
+    fun selectBoxAI(OpponentAlgo: (MutableList<MutableList<BoxModel>>) -> BoxModel = ::pickRandomly){
+
+        val choice = boxes.value?.let { OpponentAlgo(it) }
+        println("Ai algorithm returned choice $choice")
+        if (choice != null) {
+            println("AI algorithm returned choice with Column ${choice.indexColumn} and Row ${choice.indexRow}")
+            boxes.value?.get(choice.indexRow)?.get(choice.indexColumn)?.status = Status.AiO
+        } else {
+            throw Error("Ai algorithm returned a null")
+        }
     }
 
     /**

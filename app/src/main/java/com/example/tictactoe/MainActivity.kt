@@ -115,6 +115,7 @@ class MainActivity : ComponentActivity() {
             backgroundColor = Color.White,
             onClick = {
                 viewModel.selectBoxPlayer(card)
+
                 viewModel.selectBoxAI()
             }
         ) {

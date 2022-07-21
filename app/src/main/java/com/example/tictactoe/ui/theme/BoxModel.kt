@@ -13,4 +13,6 @@ class BoxModel(
             Status.PlayerX -> "X"
         }
     }
+
+    override fun toString() = "BoxMode(status=$status; Row=$indexRow; Column=$indexColumn)"
 }
